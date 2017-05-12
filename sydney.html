@@ -171,12 +171,18 @@ sponsors:
                 <div id="venue-map" style="height: 420px; width: 620px"></div>
                 <script>
                 var map = L.map('venue-map');
-                $.get('{{page.map}}', function(data) {
-                	var p = data.features[0].geometry.coordinates.slice(0).reverse();
-                  map.setView(p, 16);
-                  L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png').addTo(map);
-                	L.geoJSON(data).addTo(map);
-                }, 'json');
+                (function() {
+                  var request = new XMLHttpRequest();
+                  request.open('GET', '{{page.map}}', true);
+                  request.onload = function() {
+                    var data = JSON.parse(request.responseText);
+                  	var p = data.features[0].geometry.coordinates.slice(0).reverse();
+                    map.setView(p, 16);
+                    L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png').addTo(map);
+                  	L.geoJSON(data).addTo(map);
+                  };
+                  request.send();
+                }());
                 </script>
             </div>
         </div>
